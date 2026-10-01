@@ -1,3 +1,5 @@
+tax_rate = 0.10
+
 def get_product_name():
     product_name = input("Enter Product Name (or 'quit' to exit): ")
     if product_name == "quit":
@@ -30,17 +32,19 @@ def get_quantity():
 
     return quantity
 
+def calculate_tax(amount):
+    return amount * tax_rate
+
 def save_inventory(orders):
-    # "a" adds to the end of the file, so orders from earlier runs are kept
     with open("orders.txt", "a") as f:
-        for product_name, quantity in orders:
-            f.write(f"{product_name},{quantity}\n")
+        for product_name, quantity, tax in orders:
+            f.write(f"{product_name},{quantity},{tax}\n")
     print("Orders successfully saved to orders.txt")
 
 def generate_report(orders, failed_attempts):
     print("All orders:")
-    for product_name, quantity in orders:
-        print(f"{product_name}, {quantity}")
+    for product_name, quantity, tax in orders:
+        print(f"{product_name}, {quantity}, Tax: {tax}")
     print(f"Failed input attempts: {failed_attempts}")
 
 def main():
@@ -60,8 +64,10 @@ def main():
             failed_attempts += 1
             quantity = get_quantity()
 
-        orders.append((product_name, quantity))
-        print(f"New order added: {product_name}, {quantity}")
+        tax = calculate_tax(quantity)
+
+        orders.append((product_name, quantity, tax))
+        print(f"New order added: {product_name}, {quantity}, Tax: {tax}")
 
     save_inventory(orders)
     generate_report(orders, failed_attempts)
