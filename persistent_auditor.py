@@ -30,6 +30,13 @@ def get_quantity():
 
     return quantity
 
+def save_inventory(orders):
+    # "a" adds to the end of the file, so orders from earlier runs are kept
+    with open("orders.txt", "a") as f:
+        for product_name, quantity in orders:
+            f.write(f"{product_name},{quantity}\n")
+    print("Orders successfully saved to orders.txt")
+
 def generate_report(orders, failed_attempts):
     print("All orders:")
     for product_name, quantity in orders:
@@ -56,6 +63,7 @@ def main():
         orders.append((product_name, quantity))
         print(f"New order added: {product_name}, {quantity}")
 
+    save_inventory(orders)
     generate_report(orders, failed_attempts)
 
 main()
