@@ -32,24 +32,38 @@ def get_quantity():
 
     return quantity
 
+
 def calculate_tax(amount):
     return amount * tax_rate
 
+
+def get_first_order_number():
+    # Orders start at 1001. If orders.txt already has orders, carry on after them
+    try:
+        with open("orders.txt", "r") as f:
+            saved_orders = len(f.readlines())
+    except FileNotFoundError:
+        saved_orders = 0
+    return 1001 + saved_orders
+
+
 def save_inventory(orders):
     with open("orders.txt", "a") as f:
-        for product_name, quantity, tax in orders:
-            f.write(f"{product_name},{quantity},{tax}\n")
-    print("Orders successfully saved to orders.txt")
+        for number, product_name, quantity, tax in orders:
+            f.write(f"{number},{product_name},{quantity},{tax}\n")
+
 
 def generate_report(orders, failed_attempts):
     print("All orders:")
-    for product_name, quantity, tax in orders:
-        print(f"{product_name}, {quantity}, Tax: {tax}")
+    for number, product_name, quantity, tax in orders:
+        print(f"{number}, {product_name}, {quantity}, Tax: {tax}")
     print(f"Failed input attempts: {failed_attempts}")
+
 
 def main():
     orders = []
     failed_attempts = 0
+    order_number = get_first_order_number()
 
     while True:
         product_name = get_product_name()
@@ -66,10 +80,13 @@ def main():
 
         tax = calculate_tax(quantity)
 
-        orders.append((product_name, quantity, tax))
-        print(f"New order added: {product_name}, {quantity}, Tax: {tax}")
+        orders.append((order_number, product_name, quantity, tax))
+        print(f"New order added: {order_number}, {product_name}, {quantity}, Tax: {tax}")
+        order_number += 1
 
     save_inventory(orders)
     generate_report(orders, failed_attempts)
+
+    print("\nOrders successfully saved to orders.txt")
 
 main()
